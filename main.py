@@ -150,6 +150,13 @@ def validar_cliente(deal_id):
     blink_response = requests.post(BLINKCONECTA_API_URL_VALIDAR, json=payload, headers=headers)
 
     if blink_response.status_code != 200:
+        erro_mensagem = f"Erro na validação do cliente: {blink_response.text}"
+
+        update_data = {
+            "id": deal_id,
+            "fields": {"UF_CRM_1739456175": erro_mensagem}
+        }
+        requests.post(f"{BITRIX_API_URL}/crm.deal.update", json=update_data)
         return jsonify({"error": "Erro na validação do cliente", "details": blink_response.text}), 500
 
     blinkvalue = blink_response.json().get("values", {})
